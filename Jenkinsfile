@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/prithvirajpowar/Demo.git'
+                git 'https://github.com/prithvirajpowar/dharati.git'
             }
         }
         
