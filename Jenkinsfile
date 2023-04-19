@@ -1,13 +1,7 @@
 pipeline {
     agent any
     
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/prithvirajpowar/dharati.git'
-            }
-        }
-        
+    stages { 
         stage('Build') {
             steps {
                 sh 'flutter clean'
