@@ -5,12 +5,6 @@ pipeline {
         DOCKER_IMAGE = "my-docker-image"
     }
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/prithvirajpowar/flutter-project.git'
-            }
-        }
-        
         stage('Build') {
             steps {
                 sh 'flutter pub get'
