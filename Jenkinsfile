@@ -23,7 +23,9 @@ pipeline {
             steps {
                 script {
                     def appImage = docker.build(env.DOCKER_IMAGE, ".")
-                    appImage.push()
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        appImage.push("${DOCKERHUB_USERNAME}", "${DOCKERHUB_PASSWORD}")
+                    }
                 }
             }
         }
