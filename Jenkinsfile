@@ -1,27 +1,16 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('Build Docker Image') {
-      steps {
-        // Checkout source code from GitHub
-        git url: 'https://github.com/prithvirajpowar/dharati.git'
-
-        // Build the Docker image
-        script {
-          sh 'docker.build("prithvirajpowar/app:${env.BUILD_ID}")'
+    stages {
+        stage('Build') {
+            steps {
+                sh 'docker build -t myflutterapp .'
+            }
         }
-      }
-    }
-
-    stage('Run Docker Container') {
-      steps {
-        // Run the Docker container
-        script {
-          sh 'docker.image("prithvirajpowar/app:${env.BUILD_ID}")'
-            .withRun('-p 8080:8080')
+        stage('Deploy') {
+            steps {
+                sh 'docker run -d -p 80:80 myflutterapp'
+            }
         }
-      }
     }
-  }
 }
