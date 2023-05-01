@@ -5,7 +5,7 @@ FROM openjdk:8-jdk-alpine
 RUN apk add --no-cache bash git openssh
 
 # Set the working directory
-WORKDIR /dharati
+WORKDIR /app
 
 # Copy the app source code and dependencies into the container
 COPY pubspec.yaml /app/
