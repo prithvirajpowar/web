@@ -5,7 +5,7 @@ FROM nginx:latest
 WORKDIR /usr/share/nginx/html
 
 # Copy the built APK from the previous build stage
-COPY --from=builder /app/build/app/outputs/apk/release/app-release.apk /usr/share/nginx/html
+COPY --from=builder /app/build/app/outputs/flutter-apk/app-release.apk /usr/share/nginx/html
 
 # Copy the nginx configuration file
 COPY nginx.conf /etc/nginx/conf.d/default.conf
