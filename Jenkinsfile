@@ -9,7 +9,7 @@ pipeline {
 
         // Build the Docker image
         script {
-          docker.build("prithvirajpowar/app:${env.BUILD_ID}")
+          sh 'docker.build("prithvirajpowar/app:${env.BUILD_ID}")'
         }
       }
     }
@@ -18,10 +18,8 @@ pipeline {
       steps {
         // Run the Docker container
         script {
-          docker.image("prithvirajpowar/app:${env.BUILD_ID}")
-            .withRun('-p 8080:8080') {
-              // Execute any necessary commands inside the container
-            }
+          sh 'docker.image("prithvirajpowar/app:${env.BUILD_ID}")
+            .withRun('-p 8080:8080')'
         }
       }
     }
