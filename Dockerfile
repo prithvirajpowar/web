@@ -1,29 +1,35 @@
-# Base image
-FROM ubuntu:latest
+# Use the official Flutter image as a base
+FROM cirrusci/flutter:latest AS build
 
-# Update packages
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y curl git unzip xz-utils zip libglu1-mesa
+# Set the working directory
+WORKDIR /app
 
-# Install Flutter
-RUN git clone https://github.com/flutter/flutter.git /flutter && \
-    export PATH=$PATH:/flutter/bin && \
-    flutter config --enable-web && \
-    flutter precache && \
-    flutter doctor
+# Copy the pubspec.yaml and pubspec.lock files
+COPY pubspec.* ./
 
-# Set working directory
-WORKDIR dharati / app
+# Get the dependencies
+RUN flutter pub get
 
-# Copy the Flutter application code to the container
+# Copy the rest of the application
 COPY . .
 
-# Build the Flutter application
+# Build the release version of the application
 RUN flutter build web
 
-# Expose port 8080
-EXPOSE 8080
+# Use the official Nginx image as a base
+FROM nginx:1.21.1-alpine
 
-# Run the Flutter application
-CMD ["flutter", "run", "-d", "web-server", "--web-port", "8080"]
+# Remove the default Nginx configuration file
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy the custom Nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/
+
+# Copy the built Flutter application to the Nginx document root
+COPY --from=build /app/build/web /usr/share/nginx/html
+
+# Expose the default HTTP port
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
