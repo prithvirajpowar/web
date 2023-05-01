@@ -1,36 +1,31 @@
 pipeline {
     agent any
-
+    
     environment {
-        DOCKERHUB_USERNAME = credentials('prithvirajpowar')
-        DOCKERHUB_PASSWORD = credentials('Prithvi@5095')
-    }
-
+        DOCKER_IMAGE = "my-docker-image"
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git 'https://github.com/prithvirajpowar/flutter-project.git'
             }
         }
-
+        
         stage('Build') {
             steps {
-                sh 'flutter clean'
                 sh 'flutter pub get'
-                sh 'flutter build web --release'
+                sh 'flutter build apk'
             }
         }
-
-        stage('Dockerize') {
+        
+        stage('Archive APK') {
+            steps {
+                archiveArtifacts artifacts: 'build/app/outputs/apk/release/app-release.apk', fingerprint: true
+            }
+        }
+        stage('Build Docker Image') {
             steps {
                 script {
-                    def appImage = docker.build("prithvirajpowar/my-app:${env.BUILD_ID}", "-f Dockerfile .")
-                    appImage.push("latest")
-                    appImage.push("prithvirajpowar/my-app:${env.BUILD_ID}")
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-creds') {
-                        appImage.push('latest')
-                        appImage.push("${env.BUILD_ID}")
-                    }
+                    docker.build(env.DOCKER_IMAGE)
                 }
             }
         }
