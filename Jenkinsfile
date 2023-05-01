@@ -29,4 +29,9 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            docker.image("prithvirajpowar/my-app:${env.BUILD_ID}").remove()
+        }
+    }
 }
