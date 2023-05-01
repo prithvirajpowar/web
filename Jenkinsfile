@@ -7,11 +7,17 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Build') {
             steps {
                 sh 'flutter clean'
-                sh 'flutter packages get'
-                sh 'flutter build apk'
+                sh 'flutter pub get'
+                sh 'flutter build web --release'
             }
         }
 
