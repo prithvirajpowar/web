@@ -5,7 +5,7 @@ FROM nginx
 WORKDIR /usr/share/nginx/html
 
 # Copy build artifacts from the host machine to the container
-COPY build/web/ .
+COPY dharati/web/ /usr/share/nginx/html/
 
 # Expose port
 EXPOSE 80
