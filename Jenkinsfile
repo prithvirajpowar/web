@@ -17,7 +17,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(env.DOCKER_IMAGE, "--file ${env.DOCKER_FILE_PATH} .")
+                    sudo docker.build(env.DOCKER_IMAGE, "--file ${env.DOCKER_FILE_PATH} .")
                 }
             }
         }
@@ -25,7 +25,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://hub.docker.com/', 'dockerhub-credentials') {
+                    sudo docker.withRegistry('https://hub.docker.com/', 'dockerhub-credentials') {
                         dockerImage.push()
                     }
                 }
