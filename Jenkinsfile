@@ -2,29 +2,31 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_IMAGE = "prithvirajpowar/dharati"
+        DOCKER_IMAGE = "myflutterapp"
+        DOCKER_FILE_PATH = "Dockerfile"
     }
     
     stages {
-        stage('Build') {
+        stage('Build APK') {
             steps {
                 sh 'flutter pub get'
                 sh 'flutter build apk'
             }
         }
         
-        stage('Archive APK') {
-            steps {
-                archiveArtifacts artifacts: 'build/app/outputs/flutter-apk/app-release.apk', fingerprint: true
-            }
-        }
-        
         stage('Build Docker Image') {
             steps {
                 script {
-                    def appImage = docker.build(env.DOCKER_IMAGE, ".")
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'prithvirajpowar', passwordVariable: 'Prithvi@5095')]) {
-                        appImage.push("${DOCKERHUB_USERNAME}", "${DOCKERHUB_PASSWORD}")
+                    docker.build(env.DOCKER_IMAGE, "--file ${env.DOCKER_FILE_PATH} .")
+                }
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://hub.docker.com/', 'dockerhub-credentials') {
+                        dockerImage.push()
                     }
                 }
             }
