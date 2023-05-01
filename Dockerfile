@@ -1,15 +1,21 @@
-# Base image
-FROM nginx
+FROM openjdk:8-jdk-slim
 
-# Set working directory
-WORKDIR /usr/share/nginx/html
+RUN apt-get update && \
+    apt-get install -y curl git unzip xz-utils libglu1-mesa && \
+    apt-get clean
 
-# Copy build artifacts from the host machine to the container
-COPY dharati/web/ /usr/share/nginx/html/
+# Install Flutter SDK
+RUN git clone --branch stable --depth 1 https://github.com/flutter/flutter.git /usr/local/flutter
+ENV PATH "$PATH:/usr/local/flutter/bin"
 
-# Expose port
-EXPOSE 80
+# Create app directory
+WORKDIR /app
 
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+# Copy project files
+COPY . .
 
+# Install dependencies
+RUN flutter pub get
+
+# Build APK
+RUN flutter build apk --release
