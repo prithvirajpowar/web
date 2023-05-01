@@ -1,35 +1,29 @@
 pipeline {
-    agent any
-    
-    environment {
-        DOCKER_IMAGE = "myflutterapp"
-        DOCKER_FILE_PATH = "Dockerfile"
+  agent any
+
+  stages {
+    stage('Build Docker Image') {
+      steps {
+        // Checkout source code from GitHub
+        git url: 'https://github.com/prithvirajpowar/dharati.git'
+
+        // Build the Docker image
+        script {
+          docker.build("prithvirajpowar/app:${env.BUILD_ID}")
+        }
+      }
     }
-    
-    stages {
-        stage('Build APK') {
-            steps {
-                sh 'flutter pub get'
-                sh 'flutter build apk'
+
+    stage('Run Docker Container') {
+      steps {
+        // Run the Docker container
+        script {
+          docker.image("prithvirajpowar/app:${env.BUILD_ID}")
+            .withRun('-p 8080:8080') {
+              // Execute any necessary commands inside the container
             }
         }
-        
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sudo docker.build(env.DOCKER_IMAGE, "--file ${env.DOCKER_FILE_PATH} .")
-                }
-            }
-        }
-        
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    sudo docker.withRegistry('https://hub.docker.com/', 'dockerhub-credentials') {
-                        dockerImage.push()
-                    }
-                }
-            }
-        }
+      }
     }
+  }
 }
