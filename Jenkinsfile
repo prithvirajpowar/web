@@ -3,6 +3,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = "my-docker-image"
+    }
     stages {
         stage('Checkout') {
             steps {
