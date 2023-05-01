@@ -29,9 +29,4 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            docker.image("prithvirajpowar/my-app:${env.BUILD_ID}").remove(message: "Removing Docker image after build")
-        }
-    }
 }
