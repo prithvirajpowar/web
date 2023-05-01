@@ -1,21 +1,29 @@
-FROM openjdk:8-jdk-slim
+# Base image
+FROM ubuntu:latest
 
+# Update packages
 RUN apt-get update && \
-    apt-get install -y curl git unzip xz-utils libglu1-mesa && \
-    apt-get clean
+    apt-get upgrade -y && \
+    apt-get install -y curl git unzip xz-utils zip libglu1-mesa
 
-# Install Flutter SDK
-RUN git clone --branch stable --depth 1 https://github.com/flutter/flutter.git /usr/local/flutter
-ENV PATH "$PATH:/usr/local/flutter/bin"
+# Install Flutter
+RUN git clone https://github.com/flutter/flutter.git /flutter && \
+    export PATH=$PATH:/flutter/bin && \
+    flutter config --enable-web && \
+    flutter precache && \
+    flutter doctor
 
-# Create app directory
-WORKDIR /app
+# Set working directory
+WORKDIR dharati / app
 
-# Copy project files
+# Copy the Flutter application code to the container
 COPY . .
 
-# Install dependencies
-RUN flutter pub get
+# Build the Flutter application
+RUN flutter build web
 
-# Build APK
-RUN flutter build apk --release
+# Expose port 8080
+EXPOSE 8080
+
+# Run the Flutter application
+CMD ["flutter", "run", "-d", "web-server", "--web-port", "8080"]
