@@ -2,8 +2,9 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_IMAGE = "my-docker-image"
+        DOCKER_IMAGE = "prithvirajpowar/dharati"
     }
+    
     stages {
         stage('Build') {
             steps {
@@ -14,13 +15,15 @@ pipeline {
         
         stage('Archive APK') {
             steps {
-                archiveArtifacts artifacts: 'build/app/outputs/apk/release/app-release.apk', fingerprint: true
+                archiveArtifacts artifacts: 'build/app/outputs/flutter-apk/app-release.apk', fingerprint: true
             }
         }
+        
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(env.DOCKER_IMAGE)
+                    def appImage = docker.build(env.DOCKER_IMAGE, ".")
+                    appImage.push()
                 }
             }
         }
