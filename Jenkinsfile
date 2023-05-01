@@ -18,8 +18,8 @@ pipeline {
       steps {
         // Run the Docker container
         script {
-          sh 'docker.image("prithvirajpowar/app:${env.BUILD_ID}")
-            .withRun('-p 8080:8080')'
+          sh 'docker.image("prithvirajpowar/app:${env.BUILD_ID}")'
+            .withRun('-p 8080:8080')
         }
       }
     }
