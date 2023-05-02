@@ -1,14 +1,16 @@
-# Use an official Nginx runtime as a parent image
-FROM nginx:latest
+FROM cirrusci/flutter:1.26.0-1.0.pre
 
-# Set the working directory
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
-# Copy the built APK from the previous build stage
-COPY --from=builder /app/build/app/outputs/flutter-apk/app-release.apk /usr/share/nginx/html
+COPY . .
 
-# Copy the nginx configuration file
-COPY default.conf /etc/nginx/conf.d/default.conf
+# Install dependencies
+RUN chown -R cirrus:cirrus .
+USER cirrus
+RUN flutter pub get
 
-# Expose port 80
-EXPOSE 80
+# Build the app
+RUN flutter build apk --release
+
+# Start the app
+CMD ["flutter", "run"]
