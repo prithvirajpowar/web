@@ -7,8 +7,8 @@ pipeline {
     }
 
     environment {
-        DOCKER_USERNAME = credentials('docker-credentials').username
-        DOCKER_PASSWORD = credentials('docker-credentials').password
+        DOCKER_USERNAME = credentials('prithvirajpowar').username
+        DOCKER_PASSWORD = credentials('Prithvi@5095').password
     }
 
     stages {
