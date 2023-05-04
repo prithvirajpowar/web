@@ -1,37 +1,32 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
-
-    environment {
-        DOCKER_USERNAME = credentials('prithvirajpowar').username
-        DOCKER_PASSWORD = credentials('Prithvi@5095').password
-    }
-
+    agent any
+    
     stages {
-        stage('Build and test') {
+        stage('Build') {
             steps {
                 sh 'flutter pub get'
                 sh 'flutter build apk'
             }
         }
-
-        stage('Build Docker image') {
+        
+        stage('Archive APK') {
             steps {
-                sh 'docker build -t my-flutter-app .'
+                archiveArtifacts artifacts: 'build/app/outputs/flutter-apk/app-release.apk', fingerprint: true
             }
         }
-
-        stage('Push to Docker registry') {
+        
+        stage('Build Docker Image') {
             steps {
-                sh 'chown -R jenkins:jenkins $WORKSPACE'
-                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh "echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin"
+                sh 'docker build -t prithvirajpowar/myapp:2.0 .'
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                 }
-                sh 'docker push my-flutter-app'
+                sh 'docker push prithvirajpowar/myapp:2.0'
             }
         }
     }
